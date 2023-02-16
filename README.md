@@ -15,22 +15,22 @@ You can access the API documentation [here](https://sfg-beer-works.github.io/bre
 ## MySQL Docker Setup
 ```shell
 docker run --rm \
---name=sdjpa-db \
--e MYSQL_DATABASE=sdjpadb \
+--name=book-db \
+-e MYSQL_DATABASE=bookdb \
 -e MYSQL_USER=sdjpa \
 -e MYSQL_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
 -e MYSQL_ROOT_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
 -e TZ=Asia/Jakarta \
--p 6603:3306 \
--v "$PWD/docker/sdjpa-db/conf.d":/etc/mysql/conf.d \
--v "$PWD/storage/docker/sdjpadb-data":/var/lib/mysql \
+-p 3306:3306 \
+-v "$PWD/docker/book-db/conf.d":/etc/mysql/conf.d \
+-v "$PWD/storage/docker/bookdb-data":/var/lib/mysql \
 mysql:8
 
 ```
 
 ## Login MySQL
 ```shell
-mysql -usdjpa -p -h127.0.0.1 -P6603 
+mysql -usdjpa -p -h127.0.0.1 -P3306 
 ```
 
 ## Schema Book
