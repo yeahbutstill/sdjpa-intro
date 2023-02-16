@@ -15,7 +15,7 @@ import org.springframework.test.annotation.Commit;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DataJpaTest
 @ComponentScan(basePackages = {"guru.springframework.sdjpaintro.bootstrap"})
-public class JpaSliceTest {
+class JpaSliceTest {
 
     BookRepository bookRepository;
 

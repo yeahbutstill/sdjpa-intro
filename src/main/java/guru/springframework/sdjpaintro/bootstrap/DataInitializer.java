@@ -5,8 +5,10 @@ import guru.springframework.sdjpaintro.repositories.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile({"local", "default"})
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -19,6 +21,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        bookRepository.deleteAll();
 
         Book bookDDD = new Book("Domain Driven Design", "123", "Random House");
         logger.info("Id before save: {}", bookDDD.getId());
