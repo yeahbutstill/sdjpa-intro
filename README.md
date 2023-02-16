@@ -46,3 +46,8 @@ CREATE USER IF NOT EXISTS `bookuser`@`%` IDENTIFIED WITH mysql_native_password B
 GRANT SELECT, INSERT, UPDATE, DELETE, SHOW VIEW ON `bookdb`.* TO `bookuser`@`%`;
 FLUSH PRIVILEGES;
 ```
+
+## Run with profile
+```shell
+mvn clean install spring-boot:run -Dspring-boot.run.profiles=local
+```
