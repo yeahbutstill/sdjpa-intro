@@ -10,3 +10,39 @@ You can access the API documentation [here](https://sfg-beer-works.github.io/bre
 * Like Spring Framework Guru on [Facebook](https://www.facebook.com/springframeworkguru/)
 * Follow Spring Framework Guru on [Twitter](https://twitter.com/spring_guru)
 * Connect with John Thompson on [LinkedIn](http://www.linkedin.com/in/springguru)
+
+
+## MySQL Docker Setup
+```shell
+docker run --rm \
+--name=sdjpa-db \
+-e MYSQL_DATABASE=sdjpadb \
+-e MYSQL_USER=sdjpa \
+-e MYSQL_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
+-e MYSQL_ROOT_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
+-e TZ=Asia/Jakarta \
+-p 6603:3306 \
+-v "$PWD/docker/sdjpa-db/conf.d":/etc/mysql/conf.d \
+-v "$PWD/storage/docker/sdjpadb-data":/var/lib/mysql \
+mysql:8
+
+```
+
+## Login MySQL
+```shell
+mysql -usdjpa -p -h127.0.0.1 -P6603 
+```
+
+## Schema Book
+```sql
+DROP DATABASE IF EXISTS bookdb;
+DROP USER IF EXISTS `bookadmin`@`%`;
+DROP USER IF EXISTS `bookuser`@`%`;
+CREATE DATABASE IF NOT EXISTS bookdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS `bookadmin`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, EXECUTE, CREATE VIEW, SHOW VIEW,
+CREATE ROUTINE, ALTER ROUTINE, EVENT, TRIGGER ON `bookdb`.* TO `bookadmin`@`%`;
+CREATE USER IF NOT EXISTS `bookuser`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
+GRANT SELECT, INSERT, UPDATE, DELETE, SHOW VIEW ON `bookdb`.* TO `bookuser`@`%`;
+FLUSH PRIVILEGES;
+```
