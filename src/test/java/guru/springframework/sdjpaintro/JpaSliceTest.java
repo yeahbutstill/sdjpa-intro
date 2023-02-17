@@ -38,7 +38,7 @@ class JpaSliceTest {
         long counterBefore = bookRepository.count();
         AssertionsForClassTypes.assertThat(counterBefore).isEqualTo(2);
 
-        bookRepository.save(new Book("Testing Java Microservices", "9781617292897", "Manning"));
+        bookRepository.save(new Book("Testing Java Microservices", "9781617292897", "Manning", null));
         long counterAfter = bookRepository.count();
         AssertionsForClassTypes.assertThat(counterBefore).isLessThan(counterAfter);
     }

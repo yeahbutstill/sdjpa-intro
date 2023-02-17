@@ -8,4 +8,5 @@
     <include file="db/changelog/baselineChangelog.xml"/>
     <include file="db/changelog/initHibernate.xml"/>
     <include file="db/changelog/authorChangelog.xml"/>
+    <include file="db/changelog/addAuthorIdToBook.xml"/>
 </databaseChangeLog>
