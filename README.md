@@ -30,7 +30,7 @@ mysql:8
 
 ## Login MySQL
 ```shell
-mysql -usdjpa -p -h127.0.0.1 -P3306 
+mysql -uroot -p -h127.0.0.1 -P3306 
 ```
 
 ## Schema Book
@@ -47,7 +47,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE, SHOW VIEW ON `bookdb`.* TO `bookuser`@`%`;
 FLUSH PRIVILEGES;
 ```
 
-## Run with profile
+## Run with profile and skip test
 ```shell
-mvn clean install spring-boot:run -Dspring-boot.run.profiles=local
+mvn clean install spring-boot:run -Dspring-boot.run.profiles=local -DskipTests
 ```
