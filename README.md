@@ -51,18 +51,3 @@ FLUSH PRIVILEGES;
 ```shell
 mvn clean install spring-boot:run -Dspring-boot.run.profiles=local -DskipTests
 ```
-
-## change database version to support flyway
-```shell
-docker run --rm \
---name=book-db \
--e MYSQL_DATABASE=bookdb \
--e MYSQL_USER=sdjpa \
--e MYSQL_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
--e MYSQL_ROOT_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
--e TZ=Asia/Jakarta \
--p 3306:3306 \
--v "$PWD/docker/book-db/conf.d":/etc/mysql/conf.d \
--v "$PWD/storage/docker/bookdb-data":/var/lib/mysql \
-mysql:5
-```

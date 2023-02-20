@@ -5,17 +5,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Configuration
+
 @Profile("clean")
+@Configuration
 public class DbClean {
 
     @Bean
-    public FlywayMigrationStrategy flywayMigrationStrategy() {
+    public FlywayMigrationStrategy clean(){
         return flyway -> {
-            flyway.info();
-            flyway.validate();
+            flyway.clean();
             flyway.migrate();
         };
     }
-
 }
