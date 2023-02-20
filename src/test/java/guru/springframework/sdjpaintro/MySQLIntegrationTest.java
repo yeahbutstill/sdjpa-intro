@@ -1,8 +1,10 @@
 package guru.springframework.sdjpaintro;
 
 import guru.springframework.sdjpaintro.domain.AuthorUuid;
+import guru.springframework.sdjpaintro.domain.BookNatural;
 import guru.springframework.sdjpaintro.domain.BookUuid;
 import guru.springframework.sdjpaintro.repositories.AuthorUuidRepository;
+import guru.springframework.sdjpaintro.repositories.BookNaturalRepository;
 import guru.springframework.sdjpaintro.repositories.BookRepository;
 import guru.springframework.sdjpaintro.repositories.BookUuidRepository;
 import org.junit.jupiter.api.Test;
@@ -23,12 +25,17 @@ class MySQLIntegrationTest {
     BookRepository bookRepository;
     AuthorUuidRepository authorUuidRepository;
     BookUuidRepository bookUuidRepository;
+    BookNaturalRepository bookNaturalRepository;
 
     @Autowired
-    public MySQLIntegrationTest(BookRepository bookRepository, AuthorUuidRepository authorUuidRepository, BookUuidRepository bookUuidRepository) {
+    public MySQLIntegrationTest(BookRepository bookRepository,
+                                AuthorUuidRepository authorUuidRepository,
+                                BookUuidRepository bookUuidRepository,
+                                BookNaturalRepository bookNaturalRepository) {
         this.bookRepository = bookRepository;
         this.authorUuidRepository = authorUuidRepository;
         this.bookUuidRepository = bookUuidRepository;
+        this.bookNaturalRepository = bookNaturalRepository;
     }
 
     @Test
@@ -55,6 +62,16 @@ class MySQLIntegrationTest {
         assertThat(authorUuid.getId()).isNotNull();
 
         AuthorUuid fetched = authorUuidRepository.getReferenceById(authorUuid.getId());
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testBookNaturalid() {
+        BookNatural bookNatural = new BookNatural();
+        bookNatural.setTitle("My book");
+        BookNatural saved = bookNaturalRepository.save(bookNatural);
+
+        BookNatural fetched = bookNaturalRepository.getReferenceById(saved.getTitle());
         assertThat(fetched).isNotNull();
     }
 
