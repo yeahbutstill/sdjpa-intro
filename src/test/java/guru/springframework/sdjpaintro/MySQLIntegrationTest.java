@@ -4,6 +4,7 @@ import guru.springframework.sdjpaintro.domain.AuthorUuid;
 import guru.springframework.sdjpaintro.domain.BookNatural;
 import guru.springframework.sdjpaintro.domain.BookUuid;
 import guru.springframework.sdjpaintro.domain.composite.AuthorComposite;
+import guru.springframework.sdjpaintro.domain.composite.AuthorEmbedded;
 import guru.springframework.sdjpaintro.domain.composite.NameId;
 import guru.springframework.sdjpaintro.repositories.*;
 import org.junit.jupiter.api.Test;
@@ -26,18 +27,21 @@ class MySQLIntegrationTest {
     BookUuidRepository bookUuidRepository;
     BookNaturalRepository bookNaturalRepository;
     AuthorCompositeRepository authorCompositeRepository;
+    AuthorEmbeddedRopository authorEmbeddedRopository;
 
     @Autowired
     public MySQLIntegrationTest(BookRepository bookRepository,
                                 AuthorUuidRepository authorUuidRepository,
                                 BookUuidRepository bookUuidRepository,
                                 BookNaturalRepository bookNaturalRepository,
-                                AuthorCompositeRepository authorCompositeRepository) {
+                                AuthorCompositeRepository authorCompositeRepository,
+                                AuthorEmbeddedRopository authorEmbeddedRopository) {
         this.bookRepository = bookRepository;
         this.authorUuidRepository = authorUuidRepository;
         this.bookUuidRepository = bookUuidRepository;
         this.bookNaturalRepository = bookNaturalRepository;
         this.authorCompositeRepository = authorCompositeRepository;
+        this.authorEmbeddedRopository = authorEmbeddedRopository;
     }
 
     @Test
@@ -89,6 +93,18 @@ class MySQLIntegrationTest {
         assertThat(saved).isNotNull();
 
         AuthorComposite fetched = authorCompositeRepository.getReferenceById(nameId);
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testAuthorEmbedded() {
+        NameId nameId = new NameId("Maya", "Yasmin");
+        AuthorEmbedded authorEmbedded = new AuthorEmbedded(nameId);
+
+        AuthorEmbedded saved = authorEmbeddedRopository.save(authorEmbedded);
+        assertThat(saved).isNotNull();
+
+        AuthorEmbedded fetched = authorEmbeddedRopository.getReferenceById(nameId);
         assertThat(fetched).isNotNull();
     }
 
