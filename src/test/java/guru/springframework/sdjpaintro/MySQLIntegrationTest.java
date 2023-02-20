@@ -3,10 +3,9 @@ package guru.springframework.sdjpaintro;
 import guru.springframework.sdjpaintro.domain.AuthorUuid;
 import guru.springframework.sdjpaintro.domain.BookNatural;
 import guru.springframework.sdjpaintro.domain.BookUuid;
-import guru.springframework.sdjpaintro.repositories.AuthorUuidRepository;
-import guru.springframework.sdjpaintro.repositories.BookNaturalRepository;
-import guru.springframework.sdjpaintro.repositories.BookRepository;
-import guru.springframework.sdjpaintro.repositories.BookUuidRepository;
+import guru.springframework.sdjpaintro.domain.composite.AuthorComposite;
+import guru.springframework.sdjpaintro.domain.composite.NameId;
+import guru.springframework.sdjpaintro.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,16 +25,19 @@ class MySQLIntegrationTest {
     AuthorUuidRepository authorUuidRepository;
     BookUuidRepository bookUuidRepository;
     BookNaturalRepository bookNaturalRepository;
+    AuthorCompositeRepository authorCompositeRepository;
 
     @Autowired
     public MySQLIntegrationTest(BookRepository bookRepository,
                                 AuthorUuidRepository authorUuidRepository,
                                 BookUuidRepository bookUuidRepository,
-                                BookNaturalRepository bookNaturalRepository) {
+                                BookNaturalRepository bookNaturalRepository,
+                                AuthorCompositeRepository authorCompositeRepository) {
         this.bookRepository = bookRepository;
         this.authorUuidRepository = authorUuidRepository;
         this.bookUuidRepository = bookUuidRepository;
         this.bookNaturalRepository = bookNaturalRepository;
+        this.authorCompositeRepository = authorCompositeRepository;
     }
 
     @Test
@@ -66,12 +68,27 @@ class MySQLIntegrationTest {
     }
 
     @Test
-    void testBookNaturalid() {
+    void testBookNaturalId() {
         BookNatural bookNatural = new BookNatural();
         bookNatural.setTitle("My book");
         BookNatural saved = bookNaturalRepository.save(bookNatural);
 
         BookNatural fetched = bookNaturalRepository.getReferenceById(saved.getTitle());
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testAuthorComposite() {
+        NameId nameId = new NameId("Dani", "Setiawan");
+        AuthorComposite authorComposite = new AuthorComposite();
+        authorComposite.setFirstName(nameId.getFirstName());
+        authorComposite.setLastName(nameId.getLastName());
+        authorComposite.setCountry("IDN");
+
+        AuthorComposite saved = authorCompositeRepository.save(authorComposite);
+        assertThat(saved).isNotNull();
+
+        AuthorComposite fetched = authorCompositeRepository.getReferenceById(nameId);
         assertThat(fetched).isNotNull();
     }
 

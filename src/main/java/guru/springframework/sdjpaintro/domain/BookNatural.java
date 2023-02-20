@@ -3,6 +3,7 @@ package guru.springframework.sdjpaintro.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+// Not recommended using Natural ID
 @Entity
 public class BookNatural {
 
