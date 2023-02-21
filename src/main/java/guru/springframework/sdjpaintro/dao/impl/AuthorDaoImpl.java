@@ -22,7 +22,7 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public Author getById(Long id) throws SQLException {
+    public Author getById(Long id) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
@@ -42,7 +42,23 @@ public class AuthorDaoImpl implements AuthorDao {
                 return author;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+
+                if (statement != null) {
+                    statement.close();
+                }
+
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;
