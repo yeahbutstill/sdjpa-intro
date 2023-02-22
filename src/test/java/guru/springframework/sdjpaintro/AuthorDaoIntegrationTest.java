@@ -1,6 +1,7 @@
 package guru.springframework.sdjpaintro;
 
 import guru.springframework.sdjpaintro.dao.AuthorDao;
+import guru.springframework.sdjpaintro.dao.BookDao;
 import guru.springframework.sdjpaintro.domain.Author;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,12 @@ import org.springframework.test.context.ActiveProfiles;
 class AuthorDaoIntegrationTest {
 
     AuthorDao authorDao;
+    BookDao bookDao;
 
     @Autowired
-    public AuthorDaoIntegrationTest(AuthorDao authorDao) {
+    public AuthorDaoIntegrationTest(AuthorDao authorDao, BookDao bookDao) {
         this.authorDao = authorDao;
+        this.bookDao = bookDao;
     }
 
     @Test
@@ -63,6 +66,21 @@ class AuthorDaoIntegrationTest {
 
         Author updated = authorDao.updateAuthor(saved);
         Assertions.assertThat(updated.getLastName()).isEqualTo("Yuni");
+
+   }
+
+   @Test
+    void testDeleteAuthor() {
+
+        Author author = new Author();
+        author.setFirstName("Dani");
+        author.setLastName("Setiawan");
+
+        Author saved = authorDao.saveNewAuthor(author);
+        authorDao.deleteAuthorById(saved.getId());
+
+        Author deleted = authorDao.getById(saved.getId());
+        Assertions.assertThat(deleted).isNull();
 
    }
 
