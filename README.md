@@ -15,36 +15,26 @@ You can access the API documentation [here](https://sfg-beer-works.github.io/bre
 ## MySQL Docker Setup
 ```shell
 docker run --rm \
---name=book-db \
--e MYSQL_DATABASE=bookdb \
--e MYSQL_USER=sdjpa \
--e MYSQL_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
--e MYSQL_ROOT_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
--e TZ=Asia/Jakarta \
--p 3306:3306 \
--v "$PWD/docker/book-db/conf.d":/etc/mysql/conf.d \
--v "$PWD/storage/docker/bookdb-data":/var/lib/mysql \
-mysql:8
+--name book-db2 \
+-e POSTGRES_DB=bookdb2 \
+-e POSTGRES_USER=sdjpa \
+-e POSTGRES_PASSWORD=PNSJkxXvVNDAhePMuExTBuRR \
+-e PGDATA=/var/lib/postgresql/data/pgdata \
+-v "$PWD/bookdb2-data:/var/lib/postgresql/data" \
+-p 5432:5432 \
+postgres:14
 
 ```
 
-## Login MySQL
+## Login PostgreSQL
 ```shell
-mysql -uroot -p -h127.0.0.1 -P3306 
+psql -h 127.0.0.1 -U sdjpa bookdb2
 ```
 
-## Schema Book
+## Create User
 ```sql
-DROP DATABASE IF EXISTS bookdb;
-DROP USER IF EXISTS `bookadmin`@`%`;
-DROP USER IF EXISTS `bookuser`@`%`;
-CREATE DATABASE IF NOT EXISTS bookdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER IF NOT EXISTS `bookadmin`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, EXECUTE, CREATE VIEW, SHOW VIEW,
-CREATE ROUTINE, ALTER ROUTINE, EVENT, TRIGGER ON `bookdb`.* TO `bookadmin`@`%`;
-CREATE USER IF NOT EXISTS `bookuser`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
-GRANT SELECT, INSERT, UPDATE, DELETE, SHOW VIEW ON `bookdb`.* TO `bookuser`@`%`;
-FLUSH PRIVILEGES;
+CREATE USER bookadmin SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN REPLICATION PASSWORD 'password';
+CREATE USER bookuser CREATEDB CREATEROLE INHERIT LOGIN REPLICATION PASSWORD 'password';
 ```
 
 ## Run with profile and skip test

@@ -84,7 +84,7 @@ public class BookDaoImpl implements BookDao {
 
         try {
             connection = source.getConnection();
-            ps = connection.prepareStatement("INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?)");
+            ps = connection.prepareStatement("INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?) RETURNING id");
             ps.setString(1, book.getIsbn());
             ps.setString(2, book.getPublisher());
             ps.setString(3, book.getTitle());
@@ -98,7 +98,7 @@ public class BookDaoImpl implements BookDao {
             ps.execute();
 
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT LAST_INSERT_ID()");
+            resultSet = statement.executeQuery("SELECT LASTVAL()");
 
             if (resultSet.next()) {
                 Long savedId = resultSet.getLong(1);

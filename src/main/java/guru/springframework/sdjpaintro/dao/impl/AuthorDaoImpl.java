@@ -100,13 +100,13 @@ public class AuthorDaoImpl implements AuthorDao {
         try {
 
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?) RETURNING id");
             preparedStatement.setString(1, author.getFirstName());
             preparedStatement.setString(2, author.getLastName());
             preparedStatement.execute();
 
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT LAST_INSERT_ID()");
+            resultSet = statement.executeQuery("SELECT LASTVAL()");
 
             if (resultSet.next()) {
                 Long savedId = resultSet.getLong(1);

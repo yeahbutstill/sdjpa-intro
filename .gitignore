@@ -35,3 +35,4 @@ build/
 ### Docker ###
 /docker
 /storage
+/bookdb2-data
