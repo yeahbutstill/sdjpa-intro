@@ -2,8 +2,6 @@ package guru.springframework.sdjpaintro.dao.impl;
 
 import guru.springframework.sdjpaintro.dao.AuthorDao;
 import guru.springframework.sdjpaintro.domain.Author;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,9 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthorDaoImpl implements AuthorDao {
-
-    private final Logger logger = LoggerFactory.getLogger(AuthorDaoImpl.class);
-    private static final String CONTEXT_AUTHOR = "context author";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,22 +24,29 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
-        return null;
+        return jdbcTemplate.queryForObject("SELECT * FROM author WHERE first_name = ? AND last_name = ?",
+                getRowMapper(), firstName, lastName);
     }
 
     @Override
     public Author saveNewAuthor(Author author) {
-        return null;
+        jdbcTemplate.update("INSERT INTO author (first_name, last_name) VALUES (?, ?)",
+                author.getFirstName(), author.getLastName());
+
+        Long createdId = jdbcTemplate.queryForObject("SELECT LASTVAL()", Long.class);
+        return this.getById(createdId);
     }
 
     @Override
-    public Author updateAuthor(Author saved) {
-        return null;
+    public Author updateAuthor(Author author) {
+        jdbcTemplate.update("UPDATE author SET first_name = ?, last_name = ? WHERE id = ?",
+                author.getFirstName(), author.getLastName(), author.getId());
+        return this.getById(author.getId());
     }
 
     @Override
     public void deleteAuthorById(Long id) {
-
+        jdbcTemplate.update("DELETE FROM author WHERE id = ?", id);
     }
 
     private RowMapper<Author> getRowMapper() {

@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("local")
 @DataJpaTest
@@ -82,8 +85,13 @@ class AuthorDaoIntegrationTest {
         Author saved = authorDao.saveNewAuthor(author);
         authorDao.deleteAuthorById(saved.getId());
 
-        Author deleted = authorDao.getById(saved.getId());
-        Assertions.assertThat(deleted).isNull();
+       try {
+           assertThrows(EmptyResultDataAccessException.class, () ->
+               authorDao.getById(saved.getId())
+           );
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
 
    }
 
@@ -98,8 +106,13 @@ class AuthorDaoIntegrationTest {
         Book saved = bookDao.saveNewBook(book);
         bookDao.deleteBookById(saved.getId());
 
-        Book deleted = bookDao.getById(saved.getId());
-        Assertions.assertThat(deleted).isNull();
+       try {
+           assertThrows(EmptyResultDataAccessException.class, () ->
+                   bookDao.getById(saved.getId())
+           );
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
 
    }
 
@@ -113,7 +126,7 @@ class AuthorDaoIntegrationTest {
 
        Author author = new Author();
        author.setId(3L);
-       book.setAuthor(author);
+       book.setAuthorId(author.getId());
 
        Book saved = bookDao.saveNewBook(book);
        saved.setTitle("New Book");
@@ -135,7 +148,7 @@ class AuthorDaoIntegrationTest {
 
         Author author = new Author();
         author.setId(3L);
-        book.setAuthor(author);
+        book.setAuthorId(author.getId());
 
         Book saved = bookDao.saveNewBook(book);
         Assertions.assertThat(saved).isNotNull();
