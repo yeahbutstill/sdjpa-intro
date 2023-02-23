@@ -3,6 +3,8 @@ package guru.springframework.sdjpaintro.dao.impl;
 import guru.springframework.sdjpaintro.dao.AuthorDao;
 import guru.springframework.sdjpaintro.dao.BookDao;
 import guru.springframework.sdjpaintro.domain.Book;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -10,6 +12,9 @@ import java.sql.*;
 
 @Component
 public class BookDaoImpl implements BookDao {
+
+    private final Logger logger = LoggerFactory.getLogger(BookDaoImpl.class);
+    private static final String CONTEXT_BOOK = "context book";
 
     private final DataSource source;
     private final AuthorDao authorDao;
@@ -35,13 +40,13 @@ public class BookDaoImpl implements BookDao {
                 return getBookFromRS(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_BOOK, e);
         } finally {
             try {
                 closeAll(resultSet, ps, connection);
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_BOOK, e);
             }
         }
 
@@ -64,12 +69,12 @@ public class BookDaoImpl implements BookDao {
                 return getBookFromRS(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_BOOK, e);
         } finally {
             try {
                 closeAll(resultSet, ps, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_BOOK, e);
             }
         }
 
@@ -82,6 +87,7 @@ public class BookDaoImpl implements BookDao {
         PreparedStatement ps = null;
         ResultSet resultSet = null;
 
+        Statement statement = null;
         try {
             connection = source.getConnection();
             ps = connection.prepareStatement("INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?) RETURNING id");
@@ -97,7 +103,7 @@ public class BookDaoImpl implements BookDao {
 
             ps.execute();
 
-            Statement statement = connection.createStatement();
+            statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT LASTVAL()");
 
             if (resultSet.next()) {
@@ -105,14 +111,19 @@ public class BookDaoImpl implements BookDao {
                 return this.getById(savedId);
             }
 
-            statement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_BOOK, e);
         } finally {
+            try {
+                assert statement != null;
+                statement.close();
+            } catch (SQLException e) {
+                logger.info(CONTEXT_BOOK, e);
+            }
             try {
                 closeAll(resultSet, ps, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_BOOK, e);
             }
         }
 
@@ -123,7 +134,7 @@ public class BookDaoImpl implements BookDao {
     public Book updateBook(Book book) {
         Connection connection = null;
         PreparedStatement ps = null;
-        ResultSet resultSet = null;
+
 
         try {
             connection = source.getConnection();
@@ -140,12 +151,12 @@ public class BookDaoImpl implements BookDao {
             ps.execute();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_BOOK, e);
         } finally {
             try {
-                closeAll(resultSet, ps, connection);
+                closeAll(null, ps, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_BOOK, e);
             }
         }
 
@@ -162,13 +173,13 @@ public class BookDaoImpl implements BookDao {
             ps = connection.prepareStatement("DELETE from book where id = ?");
             ps.setLong(1, id);
             ps.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            logger.info(CONTEXT_BOOK, e);
         } finally {
             try {
                 closeAll(null, ps, connection);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException e) {
+                logger.info(CONTEXT_BOOK, e);
             }
         }
     }

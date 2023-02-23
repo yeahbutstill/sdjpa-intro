@@ -2,6 +2,8 @@ package guru.springframework.sdjpaintro.dao.impl;
 
 import guru.springframework.sdjpaintro.dao.AuthorDao;
 import guru.springframework.sdjpaintro.domain.Author;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,9 @@ import java.sql.*;
 
 @Component
 public class AuthorDaoImpl implements AuthorDao {
+
+    private final Logger logger = LoggerFactory.getLogger(AuthorDaoImpl.class);
+    private static final String CONTEXT_AUTHOR = "context author";
 
     private final DataSource dataSource;
 
@@ -42,12 +47,12 @@ public class AuthorDaoImpl implements AuthorDao {
 
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_AUTHOR, e);
         } finally {
             try {
                 closeAll(resultSet, preparedStatement, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_AUTHOR, e);
             }
         }
 
@@ -75,13 +80,13 @@ public class AuthorDaoImpl implements AuthorDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_AUTHOR, e);
         } finally {
 
             try {
                 closeAll(resultSet, preparedStatement, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_AUTHOR, e);
             }
 
         }
@@ -96,6 +101,7 @@ public class AuthorDaoImpl implements AuthorDao {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        Statement statement = null;
 
         try {
 
@@ -105,7 +111,7 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setString(2, author.getLastName());
             preparedStatement.execute();
 
-            Statement statement = connection.createStatement();
+            statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT LASTVAL()");
 
             if (resultSet.next()) {
@@ -113,16 +119,19 @@ public class AuthorDaoImpl implements AuthorDao {
                 return this.getById(savedId);
             }
 
-            statement.close();
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_AUTHOR, e);
         } finally {
-
+            try {
+                assert statement != null;
+                statement.close();
+            } catch (SQLException e) {
+                logger.info(CONTEXT_AUTHOR, e);
+            }
             try {
                 closeAll(resultSet, preparedStatement, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_AUTHOR, e);
             }
 
         }
@@ -136,7 +145,7 @@ public class AuthorDaoImpl implements AuthorDao {
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+
 
         try {
 
@@ -148,13 +157,13 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.execute();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_AUTHOR, e);
         } finally {
 
             try {
-                closeAll(resultSet, preparedStatement, connection);
+                closeAll(null, preparedStatement, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_AUTHOR, e);
             }
 
         }
@@ -175,12 +184,12 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setLong(1, id);
             preparedStatement.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info(CONTEXT_AUTHOR, e);
         } finally {
             try {
                 closeAll(null, preparedStatement, connection);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.info(CONTEXT_AUTHOR, e);
             }
         }
 
