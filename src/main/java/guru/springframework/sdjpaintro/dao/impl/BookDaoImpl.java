@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BookDaoImpl implements BookDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     public BookDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -50,5 +49,4 @@ public class BookDaoImpl implements BookDao {
     private BookMapper getBookMapper(){
         return new BookMapper();
     }
-
 }

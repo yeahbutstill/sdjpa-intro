@@ -19,13 +19,17 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Author getById(Long id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM author WHERE id = ?", getRowMapper(), id);
+        String sql = "select author.id as id, first_name, last_name, book.id as book_id, book.isbn, book.publisher, book.title from author\n" +
+                "left outer join book on author.id = book.author_id where author.id = ?";
+
+        return jdbcTemplate.query(sql, new AuthorExtractor(), id);
     }
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
-        return jdbcTemplate.queryForObject("SELECT * FROM author WHERE first_name = ? AND last_name = ?",
-                getRowMapper(), firstName, lastName);
+        return jdbcTemplate.queryForObject("SELECT * FROM author WHERE first_name = ? and last_name = ?",
+                getRowMapper(),
+                firstName, lastName);
     }
 
     @Override
@@ -34,13 +38,16 @@ public class AuthorDaoImpl implements AuthorDao {
                 author.getFirstName(), author.getLastName());
 
         Long createdId = jdbcTemplate.queryForObject("SELECT LASTVAL()", Long.class);
+
         return this.getById(createdId);
     }
 
     @Override
     public Author updateAuthor(Author author) {
+
         jdbcTemplate.update("UPDATE author SET first_name = ?, last_name = ? WHERE id = ?",
                 author.getFirstName(), author.getLastName(), author.getId());
+
         return this.getById(author.getId());
     }
 
@@ -49,7 +56,8 @@ public class AuthorDaoImpl implements AuthorDao {
         jdbcTemplate.update("DELETE FROM author WHERE id = ?", id);
     }
 
-    private RowMapper<Author> getRowMapper() {
+    private RowMapper<Author> getRowMapper(){
         return new AuthorMapper();
     }
+
 }

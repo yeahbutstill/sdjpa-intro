@@ -37,7 +37,23 @@ CREATE USER bookadmin SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN REPLICATION PA
 CREATE USER bookuser CREATEDB CREATEROLE INHERIT LOGIN REPLICATION PASSWORD 'password';
 ```
 
+## List Book Author
+```sql
+SELECT author.id AS id, first_name, last_name, book.id AS book_id, book.isbn, book.publisher, book.title FROM author LEFT OUTER JOIN book ON author.id = book.author_id WHERE author.id = 1;
+```
+
 ## Run with profile and skip test
 ```shell
 mvn clean install spring-boot:run -Dspring-boot.run.profiles=local -DskipTests
 ```
+
+## Run Sonarqube
+```shell
+docker run --rm --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:lts-community
+```
+Once your instance is up and running, Log in to http://localhost:9000 using System Administrator credentials:
+- login: admin 
+- password: admin
+
+details
+https://docs.sonarqube.org/latest/try-out-sonarqube/

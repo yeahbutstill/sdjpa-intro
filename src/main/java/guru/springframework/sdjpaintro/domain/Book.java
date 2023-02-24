@@ -84,5 +84,4 @@ public class Book {
     public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
-
 }
