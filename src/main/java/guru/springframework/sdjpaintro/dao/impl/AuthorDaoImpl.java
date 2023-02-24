@@ -2,62 +2,56 @@ package guru.springframework.sdjpaintro.dao.impl;
 
 import guru.springframework.sdjpaintro.dao.AuthorDao;
 import guru.springframework.sdjpaintro.domain.Author;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthorDaoImpl implements AuthorDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public AuthorDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AuthorDaoImpl(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override
     public Author getById(Long id) {
-        String sql = "select author.id as id, first_name, last_name, book.id as book_id, book.isbn, book.publisher, book.title from author\n" +
-                "left outer join book on author.id = book.author_id where author.id = ?";
-
-        return jdbcTemplate.query(sql, new AuthorExtractor(), id);
+        return entityManager().find(Author.class, id);
     }
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
-        return jdbcTemplate.queryForObject("SELECT * FROM author WHERE first_name = ? and last_name = ?",
-                getRowMapper(),
-                firstName, lastName);
+
+        TypedQuery<Author> query = entityManager().createQuery("SELECT a FROM Author a WHERE " +
+                "a.firstName = :first_name AND a.lastName = :last_name", Author.class);
+        query.setParameter("first_name", firstName);
+        query.setParameter("last_name", lastName);
+
+        return query.getSingleResult();
+
     }
 
     @Override
     public Author saveNewAuthor(Author author) {
-        jdbcTemplate.update("INSERT INTO author (first_name, last_name) VALUES (?, ?)",
-                author.getFirstName(), author.getLastName());
-
-        Long createdId = jdbcTemplate.queryForObject("SELECT LASTVAL()", Long.class);
-
-        return this.getById(createdId);
+        return null;
     }
 
     @Override
     public Author updateAuthor(Author author) {
-
-        jdbcTemplate.update("UPDATE author SET first_name = ?, last_name = ? WHERE id = ?",
-                author.getFirstName(), author.getLastName(), author.getId());
-
-        return this.getById(author.getId());
+        return null;
     }
 
     @Override
     public void deleteAuthorById(Long id) {
-        jdbcTemplate.update("DELETE FROM author WHERE id = ?", id);
+        // TODO document why this method is empty
     }
 
-    private RowMapper<Author> getRowMapper(){
-        return new AuthorMapper();
+    private EntityManager entityManager() {
+        return entityManagerFactory.createEntityManager();
     }
 
 }
