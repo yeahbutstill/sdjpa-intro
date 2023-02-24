@@ -1,9 +1,10 @@
 package guru.springframework.sdjpaintro.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
-
-import java.util.List;
 
 
 @Entity
@@ -20,8 +21,5 @@ public class Author {
     private Long id;
     private String firstName;
     private String lastName;
-
-    @Transient
-    private List<Book> books;
 
 }

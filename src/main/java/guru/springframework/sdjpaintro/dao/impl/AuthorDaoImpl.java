@@ -11,69 +11,73 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthorDaoImpl implements AuthorDao {
 
-    private final EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory emf;
 
     @Autowired
-    public AuthorDaoImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public AuthorDaoImpl(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     @Override
     public Author getById(Long id) {
-        return getEntityManager().find(Author.class, id);
+        EntityManager em = getEntityManager();
+        Author author = getEntityManager().find(Author.class, id);
+        em.close();
+        return author;
     }
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
-
-        TypedQuery<Author> query = getEntityManager().createQuery("SELECT a FROM Author a WHERE " +
-                "a.firstName = :first_name AND a.lastName = :last_name", Author.class);
+        EntityManager em = getEntityManager();
+        TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a " +
+                "WHERE a.firstName = :first_name and a.lastName = :last_name", Author.class);
         query.setParameter("first_name", firstName);
         query.setParameter("last_name", lastName);
 
-        return query.getSingleResult();
-
+        Author author = query.getSingleResult();
+        em.close();
+        return author;
     }
 
     @Override
     public Author saveNewAuthor(Author author) {
-
-        EntityManager entityManager = getEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(author);
-        entityManager.flush();
-        entityManager.getTransaction().commit();
-
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        em.persist(author);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
         return author;
-
     }
 
     @Override
     public Author updateAuthor(Author author) {
+        EntityManager em = getEntityManager();
 
-        EntityManager entityManager = getEntityManager();
-        entityManager.joinTransaction();
-        entityManager.merge(author);
-        entityManager.flush();
-        entityManager.clear();
-
-        return entityManager.find(Author.class, author.getId());
+        try {
+            em.joinTransaction();
+            em.merge(author);
+            em.flush();
+            em.clear();
+            Author saveAuthor = em.find(Author.class, author.getId());
+            return saveAuthor;
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public void deleteAuthorById(Long id) {
-
-        EntityManager entityManager = getEntityManager();
-        entityManager.getTransaction().begin();
-        Author author = entityManager.find(Author.class, id);
-        entityManager.remove(author);
-        entityManager.flush();
-        entityManager.getTransaction().commit();
-
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        Author author = em.find(Author.class, id);
+        em.remove(author);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
     }
 
-    private EntityManager getEntityManager() {
-        return entityManagerFactory.createEntityManager();
+    private EntityManager getEntityManager(){
+        return emf.createEntityManager();
     }
-
 }
