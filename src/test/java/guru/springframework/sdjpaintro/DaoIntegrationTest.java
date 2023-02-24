@@ -128,7 +128,7 @@ class DaoIntegrationTest {
 
         System.out.println("New Id is: " + saved.getId());
 
-        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isNotNull();
     }
 
     @Test
