@@ -96,12 +96,11 @@ class DaoIntegrationTest {
         author.setLastName("t");
 
         Author saved = authorDao.saveNewAuthor(author);
-
         authorDao.deleteAuthorById(saved.getId());
 
-        assertThrows(UncategorizedSQLException.class, () -> {
-            authorDao.getById(saved.getId());
-        });
+        Author deleted = authorDao.getById(saved.getId());
+        assertThat(deleted).isNull();
+        assertThat(authorDao.getById(saved.getId()));
     }
 
     @Test

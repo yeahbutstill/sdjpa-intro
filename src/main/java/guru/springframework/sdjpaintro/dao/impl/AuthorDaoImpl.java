@@ -20,13 +20,13 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Author getById(Long id) {
-        return entityManager().find(Author.class, id);
+        return getEntityManager().find(Author.class, id);
     }
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
 
-        TypedQuery<Author> query = entityManager().createQuery("SELECT a FROM Author a WHERE " +
+        TypedQuery<Author> query = getEntityManager().createQuery("SELECT a FROM Author a WHERE " +
                 "a.firstName = :first_name AND a.lastName = :last_name", Author.class);
         query.setParameter("first_name", firstName);
         query.setParameter("last_name", lastName);
@@ -38,7 +38,7 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author saveNewAuthor(Author author) {
 
-        EntityManager entityManager = entityManager();
+        EntityManager entityManager = getEntityManager();
         entityManager.getTransaction().begin();
         entityManager.persist(author);
         entityManager.flush();
@@ -50,15 +50,29 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Author updateAuthor(Author author) {
-        return null;
+
+        EntityManager entityManager = getEntityManager();
+        entityManager.joinTransaction();
+        entityManager.merge(author);
+        entityManager.flush();
+        entityManager.clear();
+
+        return entityManager.find(Author.class, author.getId());
     }
 
     @Override
     public void deleteAuthorById(Long id) {
-        // TODO document why this method is empty
+
+        EntityManager entityManager = getEntityManager();
+        entityManager.getTransaction().begin();
+        Author author = entityManager.find(Author.class, id);
+        entityManager.remove(author);
+        entityManager.flush();
+        entityManager.getTransaction().commit();
+
     }
 
-    private EntityManager entityManager() {
+    private EntityManager getEntityManager() {
         return entityManagerFactory.createEntityManager();
     }
 
